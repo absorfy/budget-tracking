@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Wallet
 
 class WalletSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+
     class Meta:
         model = Wallet
         fields = ("id", "name", "currency", "balance", "created_at", "updated_at")
