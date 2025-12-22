@@ -1,14 +1,15 @@
-import './App.css'
-import MainPage from './pages/MainPage'
+import React from "react";
+import Dashboard from "./components/Dashboard";
+import "./styles.css";
 
-function App() {
-  
-
+export function App()
+ {
   return (
-    <>
-      <MainPage/>
-    </>
-  )
+    <div className="app-container">
+      <h1>Особистий кабінет</h1>
+      <Dashboard />
+    </div>
+  );
 }
 
-export default App
+
