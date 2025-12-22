@@ -14,8 +14,9 @@
 4. Підніміть MongoDB: `docker compose up -d`
 5. Встановіть залежності: `pip install -r requirements.txt`
 6. Застосуйте міграції: `python manage.py migrate`
-7. Запуск: `python manage.py runserver 0.0.0.0:8000`
-8. Документація: Swagger `http://localhost:8000/api/docs`, ReDoc `http://localhost:8000/api/redoc`.
+7. Заповнити довідник валют: `python manage.py seed_currencies`
+8. Запуск: `python manage.py runserver 0.0.0.0:8000`
+9. Документація: Swagger `http://localhost:8000/api/docs`, ReDoc `http://localhost:8000/api/redoc`.
 
 ## Запуск фронтенду
 1. `cd frontend`

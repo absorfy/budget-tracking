@@ -24,7 +24,5 @@ export const api = {
     getTransactions: (walletId) => request(`/transactions/?wallet=${walletId}`),
     createTransaction: (data) =>
         request('/transactions/', { method: 'POST', body: JSON.stringify(data) }),
-    getCategories: (type) =>
-        request(`/categories/${type ? `?type=${type}` : ''}`),
     deleteTransaction: (id) => request(`/transactions/${id}/`, { method: 'DELETE' }),
 };

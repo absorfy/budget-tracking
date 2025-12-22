@@ -1,8 +1,6 @@
 from django.db import models
 from currencies.models import Currency
 
-from django.db import models
-
 class Wallet(models.Model):
     name = models.CharField(max_length=20)
     currency = currency = models.ForeignKey(
