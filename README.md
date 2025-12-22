@@ -9,7 +9,7 @@
 
 ## Запуск бекенду
 1. `cd backend`
-2. Створіть віртуальне середовище: `python -m venv .venv && .\.venv\Scripts\activate`
+2. Створіть віртуальне середовище: `py -m venv .venv && .\.venv\Scripts\Activate.ps1`
 3. Скопіюйте `.env.example` → `.env` і заповніть `MONGODB_URI`, `MONGODB_NAME`, `SECRET_KEY`, `DEBUG`.
 4. Підніміть MongoDB: `docker compose up -d`
 5. Встановіть залежності: `pip install -r requirements.txt`
