@@ -1,8 +1,8 @@
 import React from "react";
 import Dashboard from "./components/Dashboard";
-import "./styles.css";
+import "./App.css";
 
-export function App()
+export default function App()
  {
   return (
     <div className="app-container">
