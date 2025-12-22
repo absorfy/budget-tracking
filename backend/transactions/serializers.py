@@ -1,6 +1,5 @@
 from decimal import Decimal
 from rest_framework import serializers
-
 from wallets.models import Wallet
 from .models import Transaction, Category
 
@@ -34,7 +33,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
     def validate_amount(self, value: Decimal):
-        if value <= 0:
+        if value is None or value <= 0:
             raise serializers.ValidationError("Amount must be > 0.")
         return value
 
@@ -59,6 +58,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         tx_type = validated_data["type"]
         amount = validated_data["amount"]
         wallet = validated_data["wallet"]
+        validated_data["currency"] = wallet.currency
 
         tx = Transaction.objects.create(**validated_data)
 
@@ -69,3 +69,25 @@ class TransactionSerializer(serializers.ModelSerializer):
         wallet.save()
 
         return tx
+    
+
+class CategorySerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = Category
+        fields = ["id", "name", "type"]
+
+    def validate(self, attrs):
+        name = (attrs.get("name") or "").strip()
+        ctype = attrs.get("type")
+
+        qs = Category.objects.filter(name__iexact=name, type=ctype)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            raise serializers.ValidationError({"name": "Category with this name and type already exists."})
+
+        attrs["name"] = name
+        return attrs

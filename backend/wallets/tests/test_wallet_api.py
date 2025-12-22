@@ -1,7 +1,7 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
-
+from currencies.models import Currency
 from wallets.models import Wallet
 
 
@@ -15,12 +15,17 @@ class WalletApiTests(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertIn("id", res.data)
         self.assertEqual(res.data["name"], "Main")
-        self.assertEqual(res.data["currency"], "UAH")
 
+        uah = Currency.objects.get(code='UAH')
+        self.assertEqual(res.data["currency"], str(uah.id))
+
+    def _uah(self):
+        return Currency.objects.get_or_create(code="UAH", defaults={"kind": "fiat"})[0]
 
     def test_list_wallets(self):
-        Wallet.objects.create(name="W1", balance="10.00")
-        Wallet.objects.create(name="W2", balance="20.00")
+        uah = self._uah()
+        Wallet.objects.create(name="W1", balance="10.00", currency=uah)
+        Wallet.objects.create(name="W2", balance="20.00", currency=uah)
 
         url = reverse("wallets-list-create")
         res = self.client.get(url)
@@ -31,7 +36,8 @@ class WalletApiTests(APITestCase):
 
 
     def test_rename_wallet_patch(self):
-        w = Wallet.objects.create(name="Old", balance="0.00")
+        uah = self._uah()
+        w = Wallet.objects.create(name="Old", balance="0.00", currency=uah)
 
         url = reverse("wallets-detail", kwargs={"pk": str(w.pk)})
         res = self.client.patch(url, {"name": "New"}, format="json")
@@ -44,7 +50,8 @@ class WalletApiTests(APITestCase):
 
 
     def test_delete_wallet(self):
-        w = Wallet.objects.create(name="ToDelete", balance="0.00")
+        uah = self._uah()
+        w = Wallet.objects.create(name="ToDelete", balance="0.00", currency=uah)
 
         url = reverse("wallets-detail", kwargs={"pk": str(w.pk)})
         res = self.client.delete(url)

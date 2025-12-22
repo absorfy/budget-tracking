@@ -4,11 +4,13 @@ from django.urls import reverse
 
 from wallets.models import Wallet
 from transactions.models import Transaction, Category
+from currencies.models import Currency
 
 
 class TransactionApiTests(APITestCase):
     def setUp(self):
-        self.wallet = Wallet.objects.create(name="Main", balance="100.00")
+        self.uah, _ = Currency.objects.get_or_create(code="UAH", defaults={"kind": "fiat"})
+        self.wallet = Wallet.objects.create(name="Main", balance="100.00", currency=self.uah)
 
         self.cat_food = Category.objects.create(name="Food", type=Category.EXPENSE)
         self.cat_salary = Category.objects.create(name="Salary", type=Category.INCOME)
@@ -81,12 +83,14 @@ class TransactionApiTests(APITestCase):
             type=Transaction.INCOME,
             amount="10.00",
             category=self.cat_salary,
+            currency=self.wallet.currency,
         )
         Transaction.objects.create(
             wallet=self.wallet,
             type=Transaction.EXPENSE,
             amount="5.00",
             category=self.cat_food,
+            currency=self.wallet.currency,
         )
 
         res = self.client.get(self.url)
@@ -96,10 +100,10 @@ class TransactionApiTests(APITestCase):
         self.assertEqual(len(res.data), 2)
 
     def test_list_transactions_filter_by_wallet(self):
-        w2 = Wallet.objects.create(name="Second", balance="0.00")
+        w2 = Wallet.objects.create(name="Second", balance="0.00", currency=self.uah)
 
-        Transaction.objects.create(wallet=self.wallet, type=Transaction.INCOME, amount="10.00")
-        Transaction.objects.create(wallet=w2, type=Transaction.INCOME, amount="20.00")
+        Transaction.objects.create(wallet=self.wallet, type=Transaction.INCOME, amount="10.00", currency=self.wallet.currency)
+        Transaction.objects.create(wallet=w2, type=Transaction.INCOME, amount="20.00", currency=w2.currency)
 
         res = self.client.get(self.url, {"wallet": str(self.wallet.id)})
 
