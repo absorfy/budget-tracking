@@ -7,7 +7,7 @@ export default function App() {
     const [transactions, setTransactions] = useState([]);
     const [type, setType] = useState("income");
     const [amount, setAmount] = useState("");
-    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -34,9 +34,9 @@ export default function App() {
         init();
     }, []);
 
-    const loadTransactions = async (walletId) => {
+    const loadTransactions = async (walletId, { withLoading = true } = {}) => {
         if (!walletId) return;
-        setLoading(true);
+        if (withLoading) setLoading(true);
         try {
             const data = await api.getTransactions(walletId);
 
@@ -45,18 +45,18 @@ export default function App() {
         } catch (e) {
             setError(e.message);
         } finally {
-            setLoading(false);
+            if (withLoading) setLoading(false);
         }
     };
 
 
     const addTransaction = () => {
-        if (!amount || !title || !wallet) return;
+        if (!amount || !description || !wallet) return;
         const payload = {
             wallet: wallet.id,
             type,
             amount: Number(amount),
-            description: title,
+            description: description,
         };
         api.createTransaction(payload)
             .then(async () => {
@@ -64,14 +64,26 @@ export default function App() {
                 const freshWallet = await api.getWallet(wallet.id);
                 setWallet(freshWallet);
                 setAmount("");
-                setTitle("");
+                setDescription("");
             })
             .catch((e) => setError(e.message));
     };
 
 
-    const deleteTransaction = (id) => {
-        setTransactions(transactions.filter(t => t.id !== id));
+    const deleteTransaction = async (id) => {
+        if (!wallet) return;
+        setLoading(true);
+        setError(null);
+        try {
+            await api.deleteTransaction(id);
+            await loadTransactions(wallet.id, { withLoading: false });
+            const freshWallet = await api.getWallet(wallet.id);
+            setWallet(freshWallet);
+        } catch (e) {
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
 
@@ -101,8 +113,8 @@ export default function App() {
                 <input
                     type="text"
                     placeholder="Опис"
-                    value={title}
-                    onChange={e => setTitle(e.target.value)}
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
                 />
 
                 <button onClick={addTransaction} disabled={loading || !wallet}>Додати</button>
@@ -111,7 +123,7 @@ export default function App() {
             {/* LIST */}
             <h2>Мої транзакції</h2>
 
-            {error && <div className="error">{error}</div>}
+            {error && <div className="error">ACTION ERROR</div>}
             {loading && <div className="loading">Завантаження...</div>}
 
             <div className="transactions">

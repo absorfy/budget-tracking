@@ -16,6 +16,20 @@ class TransactionListCreateView(generics.ListCreateAPIView):
         return qs
     
 
+class TransactionDetailView(generics.RetrieveDestroyAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+    def perform_destroy(self, instance: Transaction):
+        wallet = instance.wallet
+        if instance.type == Transaction.INCOME:
+            wallet.balance -= instance.amount
+        else:
+            wallet.balance += instance.amount
+        wallet.save()
+        instance.delete()
+
+
 class CategoryListCreateView(generics.ListCreateAPIView):
     serializer_class = CategorySerializer
 

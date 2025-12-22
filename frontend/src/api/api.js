@@ -9,7 +9,12 @@ async function request(path, options = {}) {
         const text = await res.text();
         throw new Error(text || res.statusText);
     }
-    return res.json();
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        return null;
+    }
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
 }
 
 export const api = {
@@ -21,4 +26,5 @@ export const api = {
         request('/transactions/', { method: 'POST', body: JSON.stringify(data) }),
     getCategories: (type) =>
         request(`/categories/${type ? `?type=${type}` : ''}`),
+    deleteTransaction: (id) => request(`/transactions/${id}/`, { method: 'DELETE' }),
 };
