@@ -1,0 +1,42 @@
+.app-container {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.dashboard {
+  margin-top: 20px;
+}
+
+.user-profile {
+  background: #f0f8ff;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.add-transaction {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.transaction-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.transaction-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+}
+
+.income {
+  color: green;
+}
+
+.expense {
+  color: red;
+}
